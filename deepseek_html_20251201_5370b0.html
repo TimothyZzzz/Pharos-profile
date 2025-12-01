@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharos' World - 快乐小狗蝶的奇妙冒险</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.24.6/babel.min.js"></script>
+    <style>
+        :root {
+            /* 主色调 - 梦幻紫罗兰 */
+            --primary-color: #8b5cf6;
+            --primary-light: #a78bfa;
+            --primary-dark: #7c3aed;
+            --primary-gradient: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+            
+            /* 次要色调 - 浪漫粉红 */
+            --secondary-color: #ec4899;
+            --secondary-light: #f472b6;
+            --secondary-gradient: linear-gradient(135deg, var(--secondary-light) 0%, var(--secondary-color) 100%);
+            
+            /* 强调色 - 温暖琥珀 */
+            --accent-color: #f59e0b;
+            --accent-light: #fbbf24;
+            
+            /* 背景色 */
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f3e8ff 100%);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            
+            /* 文字色 */
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            
+            /* 阴影 */
+            --shadow-sm: 0 4px 12px rgba(139, 92, 246, 0.08);
+            --shadow-md: 0 10px 30px rgba(139, 92, 246, 0.12);
+            --shadow-lg: 0 20px 60px rgba(139, 92, 246, 0.15);
+            --shadow-xl: 0 25px 50px rgba(139, 92, 246, 0.2);
+            
+            /* 边框 */
+            --border-light: rgba(139, 92, 246, 0.1);
+            --border-medium: rgba(139, 92, 246, 0.2);
+            
+            /* 动画 */
+            --transition-fast: all 0.2s ease;
+            --transition-normal: all 0.3s ease;
+            --transition-slow: all 0.5s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        #root {
+            min-height: 100vh;
+        }
+        
+        /* 实用类 */
+        .glass-effect {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light);
+        }
+        
+        .card-effect {
+            background: var(--card-bg);
+            border: 1px solid var(--border-medium);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .secondary-gradient-text {
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* 动画关键帧 */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes gentle-pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.02);
+            }
+        }
+        
+        @keyframes gentle-spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes gentle-shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+        
+        @keyframes gentle-breathe {
+            0%, 100% {
+                box-shadow: 0 0 0 rgba(139, 92, 246, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+            }
+        }
+        
+        /* 动画类 */
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .gentle-pulse {
+            animation: gentle-pulse 3s ease-in-out infinite;
+        }
+        
+        .gentle-spin {
+            animation: gentle-spin 8s linear infinite;
+        }
+        
+        .gentle-shimmer {
+            background: linear-gradient(90deg, 
+                rgba(139, 92, 246, 0.1) 25%, 
+                rgba(236, 72, 153, 0.1) 50%, 
+                rgba(139, 92, 246, 0.1) 75%);
+            background-size: 1000px 100%;
+            animation: gentle-shimmer 20s linear infinite;
+        }
+        
+        .gentle-breathe {
+            animation: gentle-breathe 4s ease-in-out infinite;
+        }
+        
+        /* 加载动画 */
+        .loading-spinner {
+            width: 64px;
+            height: 64px;
+            border: 3px solid rgba(139, 92, 246, 0.1);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: gentle-spin 1.2s linear infinite;
+        }
+        
+        /* 按钮样式 */
+        .primary-button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .primary-button:active {
+            transform: translateY(0);
+        }
+        
+        .primary-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: left 0.5s;
+        }
+        
+        .primary-button:hover::after {
+            left: 100%;
+        }
+        
+        .secondary-button {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+        
+        .secondary-button:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .ghost-button {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+        
+        .ghost-button:hover {
+            background: rgba(139, 92, 246, 0.05);
+            color: var(--primary-color);
+            border-color: var(--primary-light);
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: 500;
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary-color);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: var(--transition-normal);
+            cursor: pointer;
+        }
+        
+        .tag:hover {
+            background: rgba(139, 92, 246, 0.2);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 粒子效果容器 */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: particle-float 20s linear infinite;
+        }
+        
+        @keyframes particle-float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            :root {
+                --shadow-md: 0 8px 24px rgba(139, 92, 246, 0.1);
+                --shadow-lg: 0 12px 36px rgba(139, 92, 246, 0.12);
+            }
+            
+            .modal-content {
+                padding: 24px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // 检查依赖
+        if (!React || !ReactDOM) {
+            document.getElementById('root').innerHTML = `
+                <div style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100vh;
+                    text-align: center;
+                    padding: 20px;
+                ">
+                    <div class="loading-spinner"></div>
+                    <p style="margin-top: 20px; color: #8b5cf6;">加载中，请稍候...</p>
+                </div>
+            `;
+        }
+        
+        // 心情消息
+        const moodMessages = [
+            "平凡的我们也将回到平凡的世界，累了你就自个儿躺一会儿",
+            "我好想好想飞，逃离这个疯狂世界，飞走之前再撒点助燃剂",
+            "我知道潮落之后一定有潮起，物理学得挺好",
+            "任意门外我们都勇敢的飞，成为自由的狗蝶",
+            "我从婴儿床，再走回光芒，人生未完待续"
+        ];
+        
+        // 个人标签
+        const personalTags = [
+            "邪恶魔盒潘多拉",
+            "神秘又迷人的莫比乌斯环",
+            "勇敢的旷野原住民",
+            "白日梦想家",
+            "环球旅行向往者",
+            "wmls",
+            "机智深邃的理想主义者",
+            "热爱生活的悲观主义者"
+        ];
+        
+        // 粒子背景组件
+        function ParticleBackground() {
+            const [particles, setParticles] = useState([]);
+            
+            useEffect(() => {
+                // 创建粒子
+                const newParticles = Array.from({ length: 20 }, (_, i) => ({
+                    id: i,
+                    size: Math.random() * 6 + 2,
+                    x: Math.random() * 100,
+                    y: Math.random() * 100,
+                    delay: Math.random() * 10,
+                    color: Math.random() > 0.5 ? '#8b5cf6' : '#ec4899'
+                }));
+                setParticles(newParticles);
+            }, []);
+            
+            return (
+                <div className="particles-container">
+                    {particles.map(particle => (
+                        <div
+                            key={particle.id}
+                            className="particle"
+                            style={{
+                                width: particle.size,
+                                height: particle.size,
+                                left: `${particle.x}%`,
+                                top: `${particle.y}%`,
+                                background: particle.color,
+                                animationDelay: `${particle.delay}s`,
+                                animationDuration: `${15 + Math.random() * 15}s`
+                            }}
+                        />
+                    ))}
+                </div>
+            );
+        }
+        
+        // 主组件
+        function Home() {
+            const [currentMood, setCurrentMood] = useState("");
+            const [energy, setEnergy] = useState(0);
+            const [isMoodRevealed, setIsMoodRevealed] = useState(false);
+            const [isLoading, setIsLoading] = useState(true);
+            const [show404Modal, setShow404Modal] = useState(false);
+            const [showDontFindMeModal, setShowDontFindMeModal] = useState(false);
+            
+            // 获取随机心情
+            const getRandomMood = () => {
+                const randomIndex = Math.floor(Math.random() * moodMessages.length);
+                setCurrentMood(moodMessages[randomIndex]);
+                setIsMoodRevealed(true);
+                
+                // 添加一点动画效果
+                setTimeout(() => {
+                    document.querySelector('.mood-button').classList.add('gentle-pulse');
+                    setTimeout(() => {
+                        document.querySelector('.mood-button').classList.remove('gentle-pulse');
+                    }, 1000);
+                }, 300);
+            };
+            
+            // 增加元气值
+            const increaseEnergy = () => {
+                setEnergy(prev => {
+                    const newEnergy = prev + 1;
+                    
+                    // 播放音效反馈
+                    const clickSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ');
+                    clickSound.play().catch(() => {});
+                    
+                    // 添加能量脉冲效果
+                    const energyBtn = document.querySelector('.energy-button');
+                    if (energyBtn) {
+                        energyBtn.classList.add('gentle-pulse');
+                        setTimeout(() => {
+                            energyBtn.classList.remove('gentle-pulse');
+                        }, 300);
+                    }
+                    
+                    return newEnergy;
+                });
+            };
+            
+            // 模拟加载
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    setIsLoading(false);
+                    getRandomMood();
+                }, 1200);
+                
+                return () => clearTimeout(timer);
+            }, []);
+            
+            // 加载状态
+            if (isLoading) {
+                return (
+                    <div style={{
+                        minHeight: '100vh',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'linear-gradient(135deg, #f8fafc 0%, #f3e8ff 100%)'
+                    }}>
+                        <div className="loading-spinner"></div>
+                        <p style={{
+                            marginTop: '24px',
+                            color: '#8b5cf6',
+                            fontSize: '16px',
+                            fontWeight: '500'
+                        }}>加载中...</p>
+                    </div>
+                );
+            }
+            
+            return (
+                <div style={{
+                    minHeight: '100vh',
+                    width: '100%',
+                    padding: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    background: 'linear-gradient(135deg, #f8fafc 0%, #f3e8ff 100%)',
+                    position: 'relative'
+                }}>
+                    {/* 粒子背景 */}
+                    <ParticleBackground />
+                    
+                    {/* 导航栏 */}
+                    <nav style={{
+                        width: '100%',
+                        maxWidth: '900px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '40px',
+                        padding: '16px 0',
+                        position: 'relative',
+                        zIndex: '10'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px'
+                        }}>
+                            <div className="float-animation">
+                                <i className="fa-solid fa-star" style={{
+                                    color: '#f59e0b',
+                                    fontSize: '28px',
+                                    filter: 'drop-shadow(0 4px 8px rgba(245, 158, 11, 0.3))'
+                                }}></i>
+                            </div>
+                            <span className="gradient-text" style={{
+                                fontSize: '28px',
+                                fontWeight: '700',
+                                letterSpacing: '-0.5px'
+                            }}>Pharos' World</span>
+                        </div>
+                    </nav>
+                    
+                    {/* 主要内容 */}
+                    <main style={{
+                        width: '100%',
+                        maxWidth: '900px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        position: 'relative',
+                        zIndex: '10'
+                    }}>
+                        {/* 个人资料部分 */}
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            marginBottom: '40px',
+                            width: '100%'
+                        }}>
+                            {/* 头像 */}
+                            <div style={{
+                                position: 'relative',
+                                marginBottom: '28px'
+                            }}>
+                                <div className="float-animation gentle-breathe" style={{
+                                    width: '160px',
+                                    height: '160px',
+                                    borderRadius: '50%',
+                                    background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                }}>
+                                    {/* 内部光晕 */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        inset: '10px',
+                                        borderRadius: '50%',
+                                        background: 'rgba(255, 255, 255, 0.1)',
+                                        backdropFilter: 'blur(4px)'
+                                    }}></div>
+                                    
+                                    {/* 装饰粒子 */}
+                                    <div style={{
+                                        position: 'absolute',
+                                        width: '30px',
+                                        height: '30px',
+                                        background: '#ec4899',
+                                        borderRadius: '50%',
+                                        top: '20px',
+                                        right: '20px',
+                                        opacity: '0.3',
+                                        filter: 'blur(2px)'
+                                    }}></div>
+                                    
+                                    <div style={{
+                                        position: 'relative',
+                                        zIndex: '2'
+                                    }}>
+                                        <i className="fa-solid fa-paw" style={{
+                                            color: 'white',
+                                            fontSize: '64px',
+                                            filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))'
+                                        }}></i>
+                                    </div>
+                                </div>
+                                
+                                {/* 装饰图标 */}
+                                <div className="gentle-spin" style={{
+                                    position: 'absolute',
+                                    bottom: '-12px',
+                                    right: '-12px',
+                                    background: '#f59e0b',
+                                    padding: '12px',
+                                    borderRadius: '50%',
+                                    boxShadow: '0 8px 24px rgba(245, 158, 11, 0.4)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <i className="fa-solid fa-wand-magic-sparkles" style={{
+                                        color: 'white',
+                                        fontSize: '20px'
+                                    }}></i>
+                                </div>
+                            </div>
+                            
+                            {/* 标题和描述 */}
+                            <h1 className="gradient-text" style={{
+                                fontSize: '36px',
+                                fontWeight: '800',
+                                marginBottom: '8px',
+                                textAlign: 'center',
+                                lineHeight: '1.2'
+                            }}>Hi，我是Pharos</h1>
+                            
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                marginBottom: '32px',
+                                padding: '12px 24px',
+                                background: 'rgba(139, 92, 246, 0.1)',
+                                borderRadius: '20px',
+                                border: '1px solid rgba(139, 92, 246, 0.2)'
+                            }}>
+                                <i className="fa-solid fa-crown" style={{
+                                    color: '#f59e0b',
+                                    fontSize: '20px'
+                                }}></i>
+                                <span style={{
+                                    fontSize: '18px',
+                                    fontWeight: '500',
+                                    color: '#7c3aed'
+                                }}>来自格兰芬多的快乐小狗蝶</span>
+                            </div>
+                            
+                            {/* 个人标签 */}
+                            <div style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                justifyContent: 'center',
+                                gap: '12px',
+                                marginBottom: '40px',
+                                maxWidth: '800px'
+                            }}>
+                                {personalTags.map((tag, index) => (
+                                    <span key={index} className="tag">
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                            
+                            {/* 个人描述卡片 */}
+                            <div className="card-effect gentle-shimmer" style={{
+                                width: '100%',
+                                padding: '32px',
+                                borderRadius: '24px',
+                                marginBottom: '32px',
+                                transition: 'all 0.3s ease'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    textAlign: 'center'
+                                }}>
+                                    <div style={{
+                                        width: '60px',
+                                        height: '60px',
+                                        borderRadius: '50%',
+                                        background: 'rgba(236, 72, 153, 0.1)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginBottom: '20px',
+                                        border: '1px solid rgba(236, 72, 153, 0.2)'
+                                    }}>
+                                        <i className="fa-solid fa-face-grin-tongue-wink" style={{
+                                            fontSize: '28px',
+                                            color: '#ec4899'
+                                        }}></i>
+                                    </div>
+                                    
+                                    <h2 style={{
+                                        fontSize: '24px',
+                                        fontWeight: '700',
+                                        marginBottom: '8px',
+                                        color: '#7c3aed'
+                                    }}>不可驯服的高贵野蛮人</h2>
+                                    
+                                    <p style={{
+                                        fontSize: '16px',
+                                        color: '#8b5cf6',
+                                        marginBottom: '24px',
+                                        opacity: '0.8'
+                                    }}>Untamable Noble Savage</p>
+                                    
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '16px',
+                                        width: '100%',
+                                        maxWidth: '400px'
+                                    }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '12px',
+                                            padding: '12px',
+                                            background: 'rgba(139, 92, 246, 0.05)',
+                                            borderRadius: '12px'
+                                        }}>
+                                            <div style={{
+                                                width: '36px',
+                                                height: '36px',
+                                                borderRadius: '10px',
+                                                background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <i className="fa-solid fa-briefcase" style={{
+                                                    color: 'white',
+                                                    fontSize: '16px'
+                                                }}></i>
+                                            </div>
+                                            <span style={{
+                                                fontSize: '15px',
+                                                fontWeight: '500',
+                                                color: '#1f2937'
+                                            }}>下班即开启第二人生</span>
+                                        </div>
+                                        
+                                        <div style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '12px',
+                                            padding: '12px',
+                                            background: 'rgba(139, 92, 246, 0.05)',
+                                            borderRadius: '12px'
+                                        }}>
+                                            <div style={{
+                                                width: '36px',
+                                                height: '36px',
+                                                borderRadius: '10px',
+                                                background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <i className="fa-solid fa-user-secret" style={{
+                                                    color: 'white',
+                                                    fontSize: '16px'
+                                                }}></i>
+                                            </div>
+                                            <span style={{
+                                                fontSize: '15px',
+                                                fontWeight: '500',
+                                                color: '#1f2937'
+                                            }}>致力于成为人生的反派角色</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* 功能卡片区域 */}
+                        <div style={{
+                            width: '100%',
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                            gap: '28px',
+                            marginBottom: '48px'
+                        }}>
+                            {/* 心情卡片 */}
+                            <div className="card-effect" style={{
+                                padding: '28px',
+                                borderRadius: '24px',
+                                transition: 'all 0.3s ease'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    marginBottom: '24px'
+                                }}>
+                                    <div className="gentle-pulse" style={{
+                                        width: '48px',
+                                        height: '48px',
+                                        borderRadius: '14px',
+                                        background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <i className="fa-solid fa-heart" style={{
+                                            color: 'white',
+                                            fontSize: '22px'
+                                        }}></i>
+                                    </div>
+                                    <h3 style={{
+                                        fontSize: '20px',
+                                        fontWeight: '700',
+                                        color: '#1f2937'
+                                    }}>点击获取今日心情</h3>
+                                </div>
+                                
+                                <button 
+                                    className="mood-button primary-button"
+                                    onClick={getRandomMood}
+                                    style={{
+                                        width: '100%',
+                                        padding: '24px',
+                                        borderRadius: '20px',
+                                        fontSize: '17px',
+                                        fontWeight: '600',
+                                        background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)'
+                                    }}
+                                >
+                                    <div style={{
+                                        position: 'relative',
+                                        zIndex: '2',
+                                        opacity: isMoodRevealed ? '1' : '0',
+                                        transform: isMoodRevealed ? 'translateY(0)' : 'translateY(10px)',
+                                        transition: 'all 0.4s ease'
+                                    }}>
+                                        <p style={{
+                                            fontStyle: 'italic',
+                                            lineHeight: '1.5'
+                                        }}>{currentMood}</p>
+                                    </div>
+                                    
+                                    {!isMoodRevealed && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '50%',
+                                            left: '50%',
+                                            transform: 'translate(-50%, -50%)',
+                                            fontSize: '16px',
+                                            fontWeight: '500',
+                                            color: 'white',
+                                            opacity: '0.9'
+                                        }}>
+                                            点击解锁心情
+                                        </div>
+                                    )}
+                                </button>
+                            </div>
+                            
+                            {/* 元气收集卡片 */}
+                            <div className="card-effect" style={{
+                                padding: '28px',
+                                borderRadius: '24px',
+                                transition: 'all 0.3s ease'
+                            }}>
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    marginBottom: '24px'
+                                }}>
+                                    <div className="gentle-spin" style={{
+                                        width: '48px',
+                                        height: '48px',
+                                        borderRadius: '14px',
+                                        background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <i className="fa-solid fa-bolt" style={{
+                                            color: 'white',
+                                            fontSize: '22px'
+                                        }}></i>
+                                    </div>
+                                    <h3 style={{
+                                        fontSize: '20px',
+                                        fontWeight: '700',
+                                        color: '#1f2937'
+                                    }}>元气收集</h3>
+                                </div>
+                                
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center'
+                                }}>
+                                    <button 
+                                        className="energy-button primary-button"
+                                        onClick={increaseEnergy}
+                                        style={{
+                                            width: '140px',
+                                            height: '140px',
+                                            borderRadius: '50%',
+                                            marginBottom: '28px',
+                                            background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
+                                            position: 'relative',
+                                            overflow: 'hidden'
+                                        }}
+                                    >
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: '8px',
+                                            left: '8px',
+                                            right: '8px',
+                                            bottom: '8px',
+                                            borderRadius: '50%',
+                                            background: 'rgba(255, 255, 255, 0.1)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            zIndex: '2'
+                                        }}>
+                                            <i className="fa-solid fa-thumbs-up" style={{
+                                                color: 'white',
+                                                fontSize: '42px'
+                                            }}></i>
+                                        </div>
+                                    </button>
+                                    
+                                    <div style={{
+                                        textAlign: 'center',
+                                        marginBottom: '32px'
+                                    }}>
+                                        <p style={{
+                                            fontSize: '14px',
+                                            color: '#6b7280',
+                                            marginBottom: '8px'
+                                        }}>当前元气值</p>
+                                        <p className="secondary-gradient-text" style={{
+                                            fontSize: '52px',
+                                            fontWeight: '800',
+                                            lineHeight: '1'
+                                        }}>{energy}</p>
+                                    </div>
+                                    
+                                    <button 
+                                        className="ghost-button"
+                                        onClick={() => setEnergy(0)}
+                                        style={{
+                                            padding: '12px 32px',
+                                            borderRadius: '16px',
+                                            fontSize: '15px',
+                                            fontWeight: '500'
+                                        }}
+                                    >
+                                        <i className="fa-solid fa-rotate-left" style={{ marginRight: '8px' }}></i>
+                                        重置元气
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* 底部按钮组 */}
+                        <div style={{
+                            width: '100%',
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                            gap: '20px',
+                            marginBottom: '60px'
+                        }}>
+                            <button 
+                                className="primary-button"
+                                onClick={() => setShow404Modal(true)}
+                                style={{
+                                    padding: '20px',
+                                    borderRadius: '20px',
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    background: 'linear-gradient(135deg, #f472b6 0%, #ec4899 100%)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '12px'
+                                }}
+                            >
+                                <i className="fa-solid fa-envelope"></i>
+                                点击获取我的邮件
+                            </button>
+                            
+                            <button 
+                                className="secondary-button"
+                                onClick={() => setShowDontFindMeModal(true)}
+                                style={{
+                                    padding: '20px',
+                                    borderRadius: '20px',
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '12px'
+                                }}
+                            >
+                                <i className="fa-solid fa-map-marker-alt"></i>
+                                快速找到我
+                            </button>
+                        </div>
+                    </main>
+                    
+                    {/* 页脚 */}
+                    <footer style={{
+                        width: '100%',
+                        maxWidth: '900px',
+                        textAlign: 'center',
+                        padding: '32px 0',
+                        marginTop: 'auto',
+                        borderTop: '1px solid rgba(139, 92, 246, 0.1)',
+                        position: 'relative',
+                        zIndex: '10'
+                    }}>
+                        <p style={{
+                            fontSize: '15px',
+                            color: '#8b5cf6',
+                            opacity: '0.8'
+                        }}>
+                            © 2025 Pharos' World | 快乐小狗蝶的奇妙冒险
+                        </p>
+                    </footer>
+                    
+                    {/* 模态框 */}
+                    {show404Modal && (
+                        <div className="modal-overlay" onClick={() => setShow404Modal(false)}>
+                            <div className="modal-content" onClick={e => e.stopPropagation()}>
+                                <button 
+                                    className="ghost-button"
+                                    onClick={() => setShow404Modal(false)}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '20px',
+                                        right: '20px',
+                                        width: '40px',
+                                        height: '40px',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    <i className="fa-solid fa-times"></i>
+                                </button>
+                                
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    textAlign: 'center'
+                                }}>
+                                    <div className="gentle-pulse" style={{
+                                        width: '100px',
+                                        height: '100px',
+                                        borderRadius: '50%',
+                                        background: 'linear-gradient(135deg, #fca5a5 0%, #ef4444 100%)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginBottom: '24px'
+                                    }}>
+                                        <i className="fa-solid fa-exclamation-triangle" style={{
+                                            color: 'white',
+                                            fontSize: '48px'
+                                        }}></i>
+                                    </div>
+                                    
+                                    <h3 className="gradient-text" style={{
+                                        fontSize: '36px',
+                                        fontWeight: '800',
+                                        marginBottom: '16px'
+                                    }}>404</h3>
+                                    
+                                    <p style={{
+                                        fontSize: '18px',
+                                        color: '#1f2937',
+                                        marginBottom: '16px',
+                                        lineHeight: '1.6'
+                                    }}>抱歉，邮件功能暂时无法访问</p>
+                                    
+                                    <p style={{
+                                        fontSize: '15px',
+                                        color: '#6b7280',
+                                        marginBottom: '32px',
+                                        lineHeight: '1.6'
+                                    }}>请稍后再试或通过其他方式联系</p>
+                                    
+                                    <button 
+                                        className="primary-button"
+                                        onClick={() => setShow404Modal(false)}
+                                        style={{
+                                            padding: '14px 36px',
+                                            borderRadius: '16px',
+                                            fontSize: '16px',
+                                            fontWeight: '600',
+                                            background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)'
+                                        }}
+                                    >
+                                        好的，我知道了
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {showDontFindMeModal && (
+                        <div className="modal-overlay" onClick={() => setShowDontFindMeModal(false)}>
+                            <div className="modal-content" onClick={e => e.stopPropagation()}>
+                                <button 
+                                    className="ghost-button"
+                                    onClick={() => setShowDontFindMeModal(false)}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '20px',
+                                        right: '20px',
+                                        width: '40px',
+                                        height: '40px',
+                                        borderRadius: '12px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                >
+                                    <i className="fa-solid fa-times"></i>
+                                </button>
+                                
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    textAlign: 'center'
+                                }}>
+                                    <div className="float-animation" style={{
+                                        width: '100px',
+                                        height: '100px',
+                                        borderRadius: '50%',
+                                        background: 'linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 100%)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        marginBottom: '24px'
+                                    }}>
+                                        <i className="fa-solid fa-user-secret" style={{
+                                            color: 'white',
+                                            fontSize: '48px'
+                                        }}></i>
+                                    </div>
+                                    
+                                    <h3 className="gradient-text" style={{
+                                        fontSize: '36px',
+                                        fontWeight: '800',
+                                        marginBottom: '16px'
+                                    }}>不要找我</h3>
+                                    
+                                    <p style={{
+                                        fontSize: '18px',
+                                        color: '#1f2937',
+                                        marginBottom: '16px',
+                                        lineHeight: '1.6'
+                                    }}>我正在享受我的私人时间</p>
+                                    
+                                    <p style={{
+                                        fontSize: '15px',
+                                        color: '#6b7280',
+                                        marginBottom: '32px',
+                                        lineHeight: '1.6'
+                                    }}>请在合适的时间再来联系我吧~</p>
+                                    
+                                    <button 
+                                        className="primary-button"
+                                        onClick={() => setShowDontFindMeModal(false)}
+                                        style={{
+                                            padding: '14px 36px',
+                                            borderRadius: '16px',
+                                            fontSize: '16px',
+                                            fontWeight: '600',
+                                            background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)'
+                                        }}
+                                    >
+                                        好吧，理解
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+        
+        // 渲染应用
+        ReactDOM.render(<Home />, document.getElementById('root'));
+    </script>
+</body>
+</html>
